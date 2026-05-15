@@ -1,4 +1,5 @@
 import numpy as np
+from src import initializers
 
 
 class Layer:
@@ -12,4 +13,13 @@ class Layer:
         raise NotImplementedError
 
     def add_weight(self, shape=None, initializer=None, trainable=True, name=None):
-        ...
+        if shape is None:
+            shape = ()
+        if initializer is None:
+            initializer = "glorot_uniform"
+        initializer = initializers.get(initializer)
+
+        if initializer is None:
+            return None
+
+        return initializer()(shape)

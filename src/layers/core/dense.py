@@ -1,13 +1,15 @@
 from src.layers.layer import Layer
 from src import activations
+from src import initializers
 import numpy as np
 
 
 class Dense(Layer):
     def __init__(self, units, activation=None, kernel_initializer="glorot_uniform"):
-        super().__init__(act)
+        super().__init__()
         self.units = units
         self.activation = activations.get(activation)
+        self.kernel_initializer = initializers.get(kernel_initializer)
 
     def build(self, input_shape):
         self.kernel = self.add_weight(
