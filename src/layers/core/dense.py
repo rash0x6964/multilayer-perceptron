@@ -5,7 +5,7 @@ import numpy as np
 
 
 class Dense(Layer):
-    def __init__(self, units, activation=None, kernel_initializer="glorot_uniform"):
+    def __init__(self, units, activation=None, kernel_initializer="glorot_uniform", input_shape=None):
         super().__init__()
         self.units = units
         self.activation = activations.get(activation)
@@ -26,4 +26,4 @@ class Dense(Layer):
         )
 
     def call(self, inputs):
-        return np.matmul(inputs, self.kernel) + self.bias
+        return self.activation(np.matmul(inputs, self.kernel) + self.bias)

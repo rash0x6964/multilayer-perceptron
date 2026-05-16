@@ -1,4 +1,3 @@
-from src import layers
-
+from src.models import Sequential
 
 
