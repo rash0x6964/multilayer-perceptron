@@ -1,4 +1,5 @@
+from src.layers.layer import Layer
 
 
-class inputLayer():
-    
+class InputLayer(Layer):
+    pass

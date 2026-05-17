@@ -27,7 +27,5 @@ class Sequential:
     def evaluate(x, y):
         pass
 
-
-
     def predict(x):
         pass

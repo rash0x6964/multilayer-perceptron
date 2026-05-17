@@ -5,13 +5,13 @@ import numpy as np
 
 np.random.default_rng(42)
 
-input = np.random.random((32, 10))
-input_shape = input.shape
+input = np.random.random((32, 30))
+input_shape = (input.shape[-1], )
 output_shape = (2,)
 
 model = src.Sequential([
-    layers.Dense(activation='sigmoid', input_shape=input_shape),
-    layers.Dense(24, activation='sigmoid', kernel_initializer='heUniform'),
+    layers.Dense(24, activation='sigmoid',
+                 kernel_initializer='heUniform', input_shape=input_shape),
     layers.Dense(24, activation='sigmoid', kernel_initializer='heUniform'),
     layers.Dense(24, activation='sigmoid', kernel_initializer='heUniform'),
     layers.Dense(output_shape, activation='softmax',
@@ -20,7 +20,7 @@ model = src.Sequential([
 
 model.compile(
     optimizer="adam",
-    loss="binary_crossentropy", # categoricalCrossentropy
+    loss="binary_crossentropy",  # categoricalCrossentropy
     metrics=["accuracy"],
 )
 
