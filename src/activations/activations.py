@@ -1,13 +1,14 @@
+import numpy as np
 
 
-def softmax(x, axis=-1):
-    pass
+def softmax(x):
+    exp_x = np.exp(x - np.max(x, axis=-1, keepdims=True))
+    return exp_x / np.sum(exp_x, axis=-1, keepdims=True)
 
-def sigmoid():
-    pass
 
-def relu():
-    pass
+def sigmoid(x):
+    return 1 / (1 + np.exp(-x))
 
-def linear():
-    pass
+
+def relu(x):
+    np.maximum(0, x)
