@@ -19,9 +19,7 @@ class Sequential:
 
     def fit(self, x=None, y=None, epochs=1, batch_size=None, validation_data=None):
         if not self.compiled:
-            raise ValueError(
-                "You must call `compile()` before calling `fit()`."
-            )
+            raise ValueError("You must call `compile()` before calling `fit()`.")
 
     def _forward(self, X):
         out = X

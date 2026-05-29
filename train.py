@@ -6,17 +6,24 @@ import numpy as np
 np.random.default_rng(42)
 
 input = np.random.random((32, 30))
-input_shape = (input.shape[-1], )
+input_shape = (input.shape[-1],)
 output_shape = (2,)
 
-model = src.Sequential([
-    layers.Dense(24, activation='sigmoid',
-                 kernel_initializer='heUniform', input_shape=input_shape),
-    layers.Dense(24, activation='sigmoid', kernel_initializer='heUniform'),
-    layers.Dense(24, activation='sigmoid', kernel_initializer='heUniform'),
-    layers.Dense(output_shape, activation='softmax',
-                 kernel_initializer='heUniform'),
-])
+model = src.Sequential(
+    [
+        layers.Dense(
+            24,
+            activation="sigmoid",
+            kernel_initializer="heUniform",
+            input_shape=input_shape,
+        ),
+        layers.Dense(24, activation="sigmoid", kernel_initializer="heUniform"),
+        layers.Dense(24, activation="sigmoid", kernel_initializer="heUniform"),
+        layers.Dense(
+            output_shape, activation="softmax", kernel_initializer="heUniform"
+        ),
+    ]
+)
 
 model.compile(
     optimizer="adam",

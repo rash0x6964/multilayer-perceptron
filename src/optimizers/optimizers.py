@@ -2,8 +2,17 @@ import numpy as np
 
 
 def sgd(
-    gradient, x, y, start, learn_rate=0.1, decay_rate=0.0, batch_size=1,
-    n_iter=50, tolerance=1e-06, dtype="float64", random_state=None
+    gradient,
+    x,
+    y,
+    start,
+    learn_rate=0.1,
+    decay_rate=0.0,
+    batch_size=1,
+    n_iter=50,
+    tolerance=1e-06,
+    dtype="float64",
+    random_state=None,
 ):
     # Checking if the gradient is callable
     if not callable(gradient):

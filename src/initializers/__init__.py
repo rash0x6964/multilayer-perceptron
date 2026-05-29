@@ -16,6 +16,4 @@ def get(identifier):
     if callable(obj):
         return obj
 
-    raise ValueError(
-        f"Could not interpret initializer identifier: {identifier}"
-    )
+    raise ValueError(f"Could not interpret initializer identifier: {identifier}")

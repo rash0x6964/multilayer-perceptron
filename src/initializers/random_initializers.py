@@ -10,10 +10,7 @@ import numpy as np
 #     return weights, biases
 
 
-
-# TODO: glorot_uniform not yet impelemented cuz it's the default one
-
-class HeUniform():
+class HeUniform:
     def __init__(self, scale=2.0, mode="fan_in", distribution="uniform", seed=None):
         self.scale = scale
         self.mode = mode
@@ -28,6 +25,14 @@ class HeUniform():
 
         limit = math.sqrt(3.0 * scale)
         return np.random.uniform(low=-limit, high=limit, size=shape)
+
+
+class Zeros:
+    def __init__(self):
+        pass
+
+    def __call__(self, shape):
+        return np.zeros(shape)
 
 
 def compute_fans(shape):

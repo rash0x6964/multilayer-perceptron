@@ -5,26 +5,55 @@ import numpy as np
 
 
 class Dense(Layer):
-    def __init__(self, units, activation=None, kernel_initializer="glorot_uniform", input_shape=None):
+    def __init__(
+        self, units, activation=None, kernel_initializer="HeUniform", input_shape=None
+    ):
         super().__init__()
         self.units = units
-        self.input_shape = input_shape 
-        self.activation = activations.get(activation)
+        self.input_shape = input_shape
+        self.activation_name = activation
+        self.activation_fn, self.activation_grad = activations.get(activation)
         self.kernel_initializer = initializers.get(kernel_initializer)
+        self._built = False
 
-    def build(self, input_shape=None):
+        if input_shape is not None:
+            self.build(input_shape)
+
+    def build(self, input_shape):
         self.kernel = self.add_weight(
             shape=(input_shape[-1], self.units),
-            initializer="glorot_uniform",
-            trainable=True,
-            name="kernal",
+            initializer="HeUniform",
         )
         self.bias = self.add_weight(
             shape=(self.units),
             initializer="zeros",
-            trainable=True,
-            name="bias"
         )
 
-    def call(self, inputs):
-        return self.activation(np.matmul(inputs, self.kernel) + self.bias)
+        self._built = True
+
+    def forward(self, inputs):
+        if not self._built:
+            self.build(inputs.shape[-1])
+
+        self.inputs = inputs
+        self.Z = inputs @ self.kernel + self.bias
+        self.A = self.activation_fn(self.Z)
+        return self.A
+
+    def backword(self, dA):
+        batch_size = self.inputs.shape[0]
+
+        if self.activation_name == "softmax":
+            # gradient already simplified by loss+softmax combo
+            dZ = dA
+        else:
+            dZ = dA * self.activation_grad(self.A)
+
+        self.dW = self.inputs.T @ dZ / batch_size
+        self.db = dZ.mean(axis=0)
+
+        dX = dZ @ self.kernel.T
+        return dX
+
+    # def call(self, inputs):
+    #     return self.activation_fn(np.matmul(inputs, self.kernel) + self.bias)
