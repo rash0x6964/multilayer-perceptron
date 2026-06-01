@@ -11,7 +11,9 @@ import numpy as np
 
 
 class HeUniform:
-    def __init__(self, scale=2.0, mode="fan_in", distribution="uniform", seed=None):
+    def __init__(
+        self, scale=2.0, mode="fan_in", distribution="uniform", seed=None
+    ):
         self.scale = scale
         self.mode = mode
         self.distribution = distribution

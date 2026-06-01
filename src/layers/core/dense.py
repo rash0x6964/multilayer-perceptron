@@ -6,7 +6,11 @@ import numpy as np
 
 class Dense(Layer):
     def __init__(
-        self, units, activation=None, kernel_initializer="HeUniform", input_shape=None
+        self,
+        units,
+        activation=None,
+        kernel_initializer="HeUniform",
+        input_shape=None,
     ):
         super().__init__()
         self.units = units

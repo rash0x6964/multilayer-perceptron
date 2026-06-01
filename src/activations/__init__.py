@@ -17,4 +17,6 @@ def get(identifier):
     if obj:
         return obj
 
-    raise ValueError(f"Could not interpret initializer identifier: {identifier}")
+    raise ValueError(
+        f"Could not interpret initializer identifier: {identifier}"
+    )

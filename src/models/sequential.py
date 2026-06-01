@@ -9,11 +9,14 @@ class Sequential:
         self.layers = layers or []
         self.compiled = False
         self.stop_training = False
+        self.rng = np.random.default_rng(42)
 
     def add(self, layer):
         self.layers.append(layer)
 
-    def compile(self, optimizer="adam", loss="categorical_crossentropy", metrics=None):
+    def compile(
+        self, optimizer="adam", loss="categorical_crossentropy", metrics=None
+    ):
         self.optimizer = optimizers.get(optimizer)
         self.loss = losses.get(loss)
         self.metrics = metrics or []
@@ -42,7 +45,7 @@ class Sequential:
     def predict(self, X, batch_size=32):
         preds = []
         for start in range(0, len(X), batch_size):
-            X_batch = X[start : start + batch_size]
+            X_batch = X[start: start + batch_size]
             preds.append(self._forward(X_batch))
         return np.vstack(preds)
 
@@ -61,7 +64,12 @@ class Sequential:
             raise RuntimeError("Call compile() before fit().")
 
         callbacks = callbacks or []
-        history = {"loss": [], "accuracy": [], "val_loss": [], "val_accuracy": []}
+        history = {
+            "loss": [],
+            "accuracy": [],
+            "val_loss": [],
+            "val_accuracy": [],
+        }
 
         # validation split
         n_val = int(len(X) * validation_split)
@@ -142,7 +150,9 @@ class Sequential:
             if verbose:
                 val_str = ""
                 if val_loss is not None:
-                    val_str = f"  val_loss: {val_loss:.4f}  val_acc: {val_acc:.4f}"
+                    val_str = (
+                        f"  val_loss: {val_loss:.4f}  val_acc: {val_acc:.4f}"
+                    )
                 print(
                     f"Epoch {epoch + 1}/{epochs} — "
                     f"loss: {epoch_loss:.4f}  acc: {epoch_acc:.4f}{val_str}"

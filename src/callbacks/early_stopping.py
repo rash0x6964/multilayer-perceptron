@@ -2,7 +2,9 @@ import numpy as np
 
 
 class EarlyStopping:
-    def __init__(self, monitor="val_loss", patience=3, restore_best_weights=True):
+    def __init__(
+        self, monitor="val_loss", patience=3, restore_best_weights=True
+    ):
         self.monitor = monitor
         self.patience = patience
         self.restore_best_weights = restore_best_weights
@@ -15,7 +17,9 @@ class EarlyStopping:
     def on_epoch_end(self, epoch, logs, model):
         current = logs.get(self.monitor)
         if current is None:
-            print(f"[EarlyStopping] metric '{self.monitor}' not found in logs.")
+            print(
+                f"[EarlyStopping] metric '{self.monitor}' not found in logs."
+            )
             return
 
         if current < self.best:

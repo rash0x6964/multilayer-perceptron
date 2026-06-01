@@ -10,7 +10,9 @@ class Layer:
     def call(self):
         raise NotImplementedError
 
-    def add_weight(self, shape=None, initializer=None, trainable=True, name=None):
+    def add_weight(
+        self, shape=None, initializer=None, trainable=True, name=None
+    ):
         initializer = initializers.get(initializer)
 
         if initializer is None:
