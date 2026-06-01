@@ -1,5 +1,7 @@
 import losses
 import optimizers
+import numpy as np
+from metrics.metric import categorical_accuracy
 
 
 class Sequential:
@@ -17,10 +19,6 @@ class Sequential:
         self.metrics = metrics or []
         self.compiled = True
 
-    def fit(self, x=None, y=None, epochs=1, batch_size=None, validation_data=None):
-        if not self.compiled:
-            raise ValueError("You must call `compile()` before calling `fit()`.")
-
     def _forward(self, X):
         out = X
         for layer in self.layers:
@@ -32,8 +30,126 @@ class Sequential:
         for layer in reversed(self.layers):
             dA = layer.backward(dA)
 
-    def evaluate(x, y):
-        pass
+    def _update(self):
+        self.optimizer.apply_gradients(self.layers)
 
-    def predict(x):
-        pass
+    def _evaluate(self, X, y):
+        y_pred = self._forward(X)
+        loss = self.loss.forward(y, y_pred)
+        acc = categorical_accuracy(y, y_pred)
+        return loss, acc
+
+    def predict(self, X, batch_size=32):
+        preds = []
+        for start in range(0, len(X), batch_size):
+            X_batch = X[start : start + batch_size]
+            preds.append(self._forward(X_batch))
+        return np.vstack(preds)
+
+    def fit(
+        self,
+        X,
+        y,
+        epochs=1,
+        batch_size=32,
+        validation_split=0.0,
+        callbacks=None,
+        verbose=1,
+    ):
+
+        if not self.compiled:
+            raise RuntimeError("Call compile() before fit().")
+
+        callbacks = callbacks or []
+        history = {"loss": [], "accuracy": [], "val_loss": [], "val_accuracy": []}
+
+        # validation split
+        n_val = int(len(X) * validation_split)
+        if n_val > 0:
+            X_train, y_train = X[:-n_val], y[:-n_val]
+            X_val, y_val = X[-n_val:], y[-n_val:]
+        else:
+            X_train, y_train = X, y
+            X_val, y_val = None, None
+
+        for cb in callbacks:
+            if hasattr(cb, "on_train_begin"):
+                cb.on_train_begin(self)
+
+        n_samples = len(X_train)
+        n_batches = int(np.ceil(n_samples / batch_size))
+        self.stop_training = False
+
+        for epoch in range(epochs):
+            # shuffle training data each epoch
+            idx = np.random.permutation(n_samples)
+            X_s, y_s = X_train[idx], y_train[idx]
+
+            epoch_loss = 0.0
+            epoch_acc = 0.0
+
+            # batch loop
+            for b in range(n_batches):
+                start = b * batch_size
+                end = min(start + batch_size, n_samples)
+                X_b = X_s[start:end]
+                y_b = y_s[start:end]
+
+                # forward pass
+                y_pred = self._forward(X_b)
+
+                # compute loss scalar (for logging only)
+                batch_loss = self.loss.forward(y_b, y_pred)
+                batch_acc = categorical_accuracy(y_b, y_pred)
+
+                # backward pass
+                self._backward(y_b, y_pred)
+
+                # update W, b
+                self._update()
+
+                epoch_loss += batch_loss * len(X_b)
+                epoch_acc += batch_acc * len(X_b)
+
+            epoch_loss /= n_samples
+            epoch_acc /= n_samples
+
+            # validation
+            if X_val is not None:
+                val_loss, val_acc = self._evaluate(X_val, y_val)
+            else:
+                val_loss, val_acc = None, None
+
+            logs = {
+                "loss": epoch_loss,
+                "accuracy": epoch_acc,
+                "val_loss": val_loss,
+                "val_accuracy": val_acc,
+            }
+
+            history["loss"].append(epoch_loss)
+            history["accuracy"].append(epoch_acc)
+            if val_loss is not None:
+                history["val_loss"].append(val_loss)
+                history["val_accuracy"].append(val_acc)
+
+            # early stopping checks at the end of each epoch
+            for cb in callbacks:
+                if hasattr(cb, "on_epoch_end"):
+                    cb.on_epoch_end(epoch, logs, self)
+
+            # verbose output
+            if verbose:
+                val_str = ""
+                if val_loss is not None:
+                    val_str = f"  val_loss: {val_loss:.4f}  val_acc: {val_acc:.4f}"
+                print(
+                    f"Epoch {epoch + 1}/{epochs} — "
+                    f"loss: {epoch_loss:.4f}  acc: {epoch_acc:.4f}{val_str}"
+                )
+
+            # stop if early stopping fired
+            if self.stop_training:
+                break
+
+        return history
