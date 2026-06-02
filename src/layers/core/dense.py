@@ -30,21 +30,21 @@ class Dense(Layer):
         )
         self.bias = self.add_weight(
             shape=(self.units),
-            initializer="zeros",
+            initializer="Zeros",
         )
 
         self._built = True
 
     def forward(self, inputs):
         if not self._built:
-            self.build(inputs.shape[-1])
+            self.build(inputs.shape)
 
         self.inputs = inputs
         self.Z = inputs @ self.kernel + self.bias
         self.A = self.activation_fn(self.Z)
         return self.A
 
-    def backword(self, dA):
+    def backward(self, dA):
         batch_size = self.inputs.shape[0]
 
         if self.activation_name == "softmax":

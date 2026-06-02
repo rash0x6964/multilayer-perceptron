@@ -1,8 +1,10 @@
 from src.initializers.random_initializers import HeUniform
+from src.initializers.random_initializers import Zeros
 
 
 ALL_OBJECTS = {
     HeUniform,
+    Zeros,
 }
 
 ALL_OBJECTS_DICT = {cls.__name__: cls for cls in ALL_OBJECTS}

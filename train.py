@@ -1,48 +1,70 @@
-import src
-from src import layers
 import numpy as np
+import pandas as pd
+from src import Sequential, Dense, EarlyStopping
 
 
-if __name__ == "__main__":
+train_df = pd.read_csv("data_training.csv")
 
-    np.random.seed(42)
+# split X / y
+X_train = train_df.drop(columns=["label"])
+y_train = train_df["label"]
 
-    input = np.random.random((32, 30))
-    input_shape = (input.shape[-1],)
-    output_shape = (2,)
+# one-hot encoding
+y_train_ohe = np.eye(2)[y_train]
 
-    model = src.Sequential(
-        [
-            layers.Dense(
-                24,
-                activation="sigmoid",
-                kernel_initializer="heUniform",
-                input_shape=input_shape,
-            ),
-            layers.Dense(24, activation="sigmoid",
-                         kernel_initializer="heUniform"),
-            layers.Dense(24, activation="sigmoid",
-                         kernel_initializer="heUniform"),
-            layers.Dense(
-                output_shape, activation="softmax", kernel_initializer="heUniform"
-            ),
-        ]
-    )
+# standardization
+mean = X_train.mean(axis=0)
+std = X_train.std(axis=0)
 
-    model.compile(
-        optimizer="adam",
-        loss="binary_crossentropy",  # categoricalCrossentropy
-        metrics=["accuracy"],
-    )
+std[std == 0] = 1
 
-    history = model.fit(
-        partial_x_train,
-        partial_y_train,
-        epochs=20,
-        batch_size=512,
-        validation_data=(x_val, y_val),
-    )
+X_train_std = ((X_train - mean) / std).to_numpy()
 
-    # >>> history_dict = history.history
-    # >>> history_dict.keys()
-    # dict_keys(["accuracy", "loss", "val_accuracy", "val_loss"])
+
+# save scaler
+np.savez(
+    "scaler.npy",
+    mean=mean.to_numpy(),
+    std=std.to_numpy(),
+)
+
+
+shape = X_train_std.shape
+
+model = Sequential([
+    Dense(24, activation="sigmoid", input_shape=shape),
+    Dense(24, activation="sigmoid", kernel_initializer="HeUniform"),
+    Dense(24, activation="sigmoid", kernel_initializer="HeUniform"),
+    Dense(2,  activation="softmax", kernel_initializer="HeUniform"),
+])
+
+model.compile(
+    optimizer="adam",
+    loss="categorical_crossentropy",
+    metrics=["accuracy"],
+)
+
+print("\n[train] starting training...\n")
+
+history = model.fit(
+    X_train_std,
+    y_train_ohe,
+    epochs=200,
+    batch_size=84,
+    validation_split=0.1,
+    callbacks=[EarlyStopping()]
+)
+
+n_epochs = len(history["loss"])
+final_loss = history["loss"][-1]
+final_acc = history["accuracy"][-1]
+best_val = min(history["val_loss"])
+
+print(f"\n[result] trained for {n_epochs} epochs")
+print(f"[result] final train loss : {final_loss:.4f}")
+print(f"[result] final train acc  : {final_acc:.4f}")
+print(f"[result] best val loss    : {best_val:.4f}")
+
+model.save("model")
+print("\n[save] model -> model.npy")
+print("[save] scaler -> scaler.npy")

@@ -1,7 +1,7 @@
-import losses
-import optimizers
+from src.metrics.metric import categorical_accuracy
+from src.layers import Dense
+from src import losses, optimizers
 import numpy as np
-from metrics.metric import categorical_accuracy
 
 
 class Sequential:
@@ -48,6 +48,47 @@ class Sequential:
             X_batch = X[start: start + batch_size]
             preds.append(self._forward(X_batch))
         return np.vstack(preds)
+
+    def save(self, path):
+        data = {}
+        for i, layer in enumerate(self.layers):
+            data[f"layer_{i}_W"] = layer.W
+            data[f"layer_{i}_b"] = layer.b
+            data[f"layer_{i}_units"] = np.array(layer.units)
+            data[f"layer_{i}_activation"] = np.array(
+                layer.activation_name or "linear"
+            )
+            data[f"layer_{i}_initializer"] = np.array("glorot_uniform")
+        data["n_layers"] = np.array(len(self.layers))
+        np.savez(path, **data)
+        print(
+            f"[save] model saved to '{path}.npz'  ({len(self.layers)} layers)"
+        )
+
+    @classmethod
+    def load(cls, path):
+        data = np.load(path, allow_pickle=True)
+        n = int(data["n_layers"])
+        layers = []
+        for i in range(n):
+            units = int(data[f"layer_{i}_units"])
+            activation = str(data[f"layer_{i}_activation"])
+            W = data[f"layer_{i}_W"]
+            b = data[f"layer_{i}_b"]
+
+            layer = Dense(
+                units,
+                activation=activation if activation != "linear" else None,
+            )
+
+            layer.kernel = W
+            layer.bias = b
+            layer._built = True
+            layers.append(layer)
+
+        model = cls(layers)
+        print(f"[load] model loaded from '{path}'  ({n} layers)")
+        return model
 
     def fit(
         self,
