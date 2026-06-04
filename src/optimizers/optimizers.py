@@ -1,7 +1,14 @@
+from abc import ABC, abstractmethod
 import numpy as np
 
 
-class Adam:
+class Optimizer(ABC):
+    @abstractmethod
+    def apply_gradients(self, layers):
+        pass
+
+
+class Adam(Optimizer):
     def __init__(
         self, learning_rate=0.001, beta_1=0.9, beta_2=0.999, epsilon=1e-7
     ):
@@ -30,3 +37,29 @@ class Adam:
             m_hat_b = layer.mb / b1t
             v_hat_b = layer.vb / b2t
             layer.b -= self.lr * m_hat_b / (np.sqrt(v_hat_b) + self.epsilon)
+
+
+class SGD(Optimizer):
+    def __init__(self, learning_rate=0.01, momentum=0.9):
+        self.lr = learning_rate
+        self.momentum = momentum
+        self._velocities = {}
+
+    def apply_gradients(self, layers):
+        for layer in layers:
+            lid = id(layer)
+
+            if lid not in self._velocities:
+                self._velocities[lid] = (
+                    np.zeros_like(layer.kernel),
+                    np.zeros_like(layer.bias),
+                )
+
+            vW, vb = self._velocities[lid]
+
+            vW = self.momentum * vW - self.lr * layer.dW
+            vb = self.momentum * vb - self.lr * layer.db
+            layer.kernel += vW
+            layer.bias += vb
+
+            self._velocities[lid] = (vW, vb)

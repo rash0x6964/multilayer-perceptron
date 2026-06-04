@@ -9,7 +9,6 @@ class Sequential:
         self.layers = layers or []
         self.compiled = False
         self.stop_training = False
-        self.rng = np.random.default_rng(42)
 
     def add(self, layer):
         self.layers.append(layer)
@@ -52,8 +51,8 @@ class Sequential:
     def save(self, path):
         data = {}
         for i, layer in enumerate(self.layers):
-            data[f"layer_{i}_W"] = layer.W
-            data[f"layer_{i}_b"] = layer.b
+            data[f"layer_{i}_W"] = layer.kernel
+            data[f"layer_{i}_b"] = layer.bias
             data[f"layer_{i}_units"] = np.array(layer.units)
             data[f"layer_{i}_activation"] = np.array(
                 layer.activation_name or "linear"

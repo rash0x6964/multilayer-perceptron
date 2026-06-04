@@ -1,7 +1,5 @@
 from src.layers.layer import Layer
 from src import activations
-from src import initializers
-import numpy as np
 
 
 class Dense(Layer):
@@ -17,7 +15,7 @@ class Dense(Layer):
         self.input_shape = input_shape
         self.activation_name = activation
         self.activation_fn, self.activation_grad = activations.get(activation)
-        self.kernel_initializer = initializers.get(kernel_initializer)
+        self.kernel_initializer = kernel_initializer
         self._built = False
 
         if input_shape is not None:
@@ -26,7 +24,7 @@ class Dense(Layer):
     def build(self, input_shape):
         self.kernel = self.add_weight(
             shape=(input_shape[-1], self.units),
-            initializer="HeUniform",
+            initializer=self.kernel_initializer,
         )
         self.bias = self.add_weight(
             shape=(self.units),
@@ -58,6 +56,3 @@ class Dense(Layer):
 
         dX = dZ @ self.kernel.T
         return dX
-
-    # def call(self, inputs):
-    #     return self.activation_fn(np.matmul(inputs, self.kernel) + self.bias)

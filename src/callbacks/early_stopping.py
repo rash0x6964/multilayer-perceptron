@@ -27,16 +27,19 @@ class EarlyStopping:
             self.wait = 0
             if self.restore_best_weights:
                 self.best_weights = [
-                    (layer.W.copy(), layer.b.copy()) for layer in model.layers
+                    (layer.kernel.copy(), layer.bias.copy())
+                    for layer in model.layers
                 ]
         else:
             self.wait += 1
             if self.wait >= self.patience:
                 model.stop_training = True
                 if self.restore_best_weights and self.best_weights is not None:
-                    for layer, (W, b) in zip(model.layers, self.best_weights):
-                        layer.W = W.copy()
-                        layer.b = b.copy()
+                    for layer, (kernel, bias) in zip(
+                        model.layers, self.best_weights
+                    ):
+                        layer.kernel = kernel.copy()
+                        layer.bias = bias.copy()
                 print(
                     f"\n[EarlyStopping] Stopped at epoch {epoch + 1}. "
                     f"Best {self.monitor}: {self.best:.4f}"
