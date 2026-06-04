@@ -6,8 +6,8 @@ from src import Sequential, Dense, EarlyStopping
 train_df = pd.read_csv("data_training.csv")
 
 # split X / y
-X_train = train_df.drop(columns=["label"])
-y_train = train_df["label"]
+X_train = train_df.drop(columns=["label"]).to_numpy()
+y_train = train_df["label"].to_numpy()
 
 # one-hot encoding
 y_train_ohe = np.eye(2)[y_train]
@@ -18,14 +18,14 @@ std = X_train.std(axis=0)
 
 std[std == 0] = 1
 
-X_train_std = ((X_train - mean) / std).to_numpy()
+X_train_std = ((X_train - mean) / std)
 
 
 # save scaler
 np.savez(
     "scaler",
-    mean=mean.to_numpy(),
-    std=std.to_numpy(),
+    mean=mean,
+    std=std,
 )
 
 np.random.seed(42)

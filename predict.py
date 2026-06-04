@@ -9,17 +9,17 @@ std = data["std"]
 valid_df = pd.read_csv("data_validation.csv")
 
 # split X / y
-X_valid = valid_df.drop(columns=["label"])
-y_valid = valid_df["label"]
+X_valid = valid_df.drop(columns=["label"]).to_numpy()
+y_valid = valid_df["label"].to_numpy()
 
 # one-hot encoding
 y_valid_ohe = np.eye(2)[y_valid]
 
 # standardization
-X_valid_std = ((X_valid - mean) / std).to_numpy()
+X_valid_std = (X_valid - mean) / std
 
 
-model = Sequential.load("model.npy")
+model = Sequential.load("model.npz")
 
 
 print(f"[predict] running predictions on {len(X_valid_std)} samples...\n")
