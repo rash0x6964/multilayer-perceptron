@@ -48,7 +48,7 @@ class Sequential:
     def predict(self, X, batch_size=32):
         preds = []
         for start in range(0, len(X), batch_size):
-            X_batch = X[start: start + batch_size]
+            X_batch = X[start : start + batch_size]
             preds.append(self._forward(X_batch))
         return np.vstack(preds)
 
