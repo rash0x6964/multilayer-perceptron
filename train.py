@@ -2,7 +2,6 @@ import numpy as np
 import pandas as pd
 from src import Sequential, Dense, EarlyStopping
 
-from matplotlib import figure
 import matplotlib.pyplot as plt
 
 
@@ -21,7 +20,7 @@ std = X_train.std(axis=0)
 
 std[std == 0] = 1
 
-X_train_std = ((X_train - mean) / std)
+X_train_std = (X_train - mean) / std
 
 
 # save scaler
@@ -47,7 +46,7 @@ model = Sequential(
 model.compile(
     optimizer="sgd",
     loss="categorical_crossentropy",
-    metrics=["accuracy"],
+    _metrics=["accuracy", "precision", "recall"],
 )
 
 print("\n[train] starting training...\n")
@@ -65,22 +64,22 @@ model.save("model")
 
 
 fig, axs = plt.subplots(1, 2, figsize=(13, 5))
-axs[0].plot(history['accuracy'])
-axs[0].plot(history['val_accuracy'])
-axs[0].set_title('Trained Neural Network Accuracy')
-axs[0].set_xlabel('epochs')
-axs[0].set_ylabel('accuracy')
+axs[0].plot(history["accuracy"])
+axs[0].plot(history["val_accuracy"])
+axs[0].set_title("Trained Neural Network Accuracy")
+axs[0].set_xlabel("epochs")
+axs[0].set_ylabel("accuracy")
 
-axs[0].legend(['training acc', 'validation acc'], loc='lower right')
+axs[0].legend(["training acc", "validation acc"], loc="lower right")
 
 
-axs[1].plot(history['loss'])
-axs[1].plot(history['val_loss'])
-axs[1].set_title('Trained Neural Network Loss')
-axs[1].set_xlabel('epochs')
-axs[1].set_ylabel('Loss')
+axs[1].plot(history["loss"])
+axs[1].plot(history["val_loss"])
+axs[1].set_title("Trained Neural Network Loss")
+axs[1].set_xlabel("epochs")
+axs[1].set_ylabel("Loss")
 
-axs[1].legend(['training loss', 'validation loss'], loc='lower right')
+axs[1].legend(["training loss", "validation loss"], loc="lower right")
 
 plt.tight_layout()
 plt.show()
