@@ -51,7 +51,7 @@ def main():
     y_pred = model.predict(X_valid_std, batch_size=32)
 
     # TODO: maybe rename the categorical_accuracy to Binary Cross Entropy
-    # and make sure it the same equation they provied in the subject... 
+    # and make sure it the same equation they provied in the subject...
     acc = categorical_accuracy(y_valid_ohe, y_pred)
     print(f"\n[result] accuracy on {len(X_valid_std)} samples: {acc:.1%}")
 

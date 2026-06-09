@@ -17,26 +17,45 @@ class Adam(Optimizer):
         self.beta_2 = beta_2
         self.epsilon = epsilon
         self.t = 0
+        self._moments = {}
 
     def apply_gradients(self, layers):
         self.t += 1
+
+        # bias-correction denominators
         b1t = 1.0 - self.beta_1**self.t
         b2t = 1.0 - self.beta_2**self.t
 
         for layer in layers:
+            lid = id(layer)
+
+            if lid not in self._moments:
+                self._moments[lid] = (
+                    np.zeros_like(layer.kernel),
+                    np.zeros_like(layer.kernel),
+                    np.zeros_like(layer.bias),
+                    np.zeros_like(layer.bias),
+                )
+
+            mW, vW, mb, vb = self._moments[lid]
+
             # weights
-            layer.mW = self.beta_1 * layer.mW + (1 - self.beta_1) * layer.dW
-            layer.vW = self.beta_2 * layer.vW + (1 - self.beta_2) * layer.dW**2
-            m_hat_W = layer.mW / b1t
-            v_hat_W = layer.vW / b2t
-            layer.W -= self.lr * m_hat_W / (np.sqrt(v_hat_W) + self.epsilon)
+            mW = self.beta_1 * mW + (1 - self.beta_1) * layer.dW
+            vW = self.beta_2 * vW + (1 - self.beta_2) * layer.dW**2
+            m_hat_W = mW / b1t
+            v_hat_W = vW / b2t
+            layer.kernel -= (
+                self.lr * m_hat_W / (np.sqrt(v_hat_W) + self.epsilon)
+            )
 
             # biases
-            layer.mb = self.beta_1 * layer.mb + (1 - self.beta_1) * layer.db
-            layer.vb = self.beta_2 * layer.vb + (1 - self.beta_2) * layer.db**2
-            m_hat_b = layer.mb / b1t
-            v_hat_b = layer.vb / b2t
-            layer.b -= self.lr * m_hat_b / (np.sqrt(v_hat_b) + self.epsilon)
+            mb = self.beta_1 * mb + (1 - self.beta_1) * layer.db
+            vb = self.beta_2 * vb + (1 - self.beta_2) * layer.db**2
+            m_hat_b = mb / b1t
+            v_hat_b = vb / b2t
+            layer.bias -= self.lr * m_hat_b / (np.sqrt(v_hat_b) + self.epsilon)
+
+            self._moments[lid] = (mW, vW, mb, vb)
 
 
 class SGD(Optimizer):
