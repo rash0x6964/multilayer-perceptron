@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from src import Sequential, categorical_accuracy
+from src.losses import BinaryCrossentropy
 import numpy as np
 import pandas as pd
 import argparse
@@ -50,10 +51,29 @@ def main():
     print(f"[predict] running predictions on {len(X_valid_std)} samples...\n")
     y_pred = model.predict(X_valid_std, batch_size=32)
 
-    # TODO: maybe rename the categorical_accuracy to Binary Cross Entropy
-    # and make sure it the same equation they provied in the subject...
     acc = categorical_accuracy(y_valid_ohe, y_pred)
-    print(f"\n[result] accuracy on {len(X_valid_std)} samples: {acc:.1%}")
+
+    loss_fn = BinaryCrossentropy()
+    bce = loss_fn.forward(y_valid.reshape(-1, 1), y_pred[:, 1].reshape(-1, 1))
+
+    pred_labels = np.argmax(y_pred, axis=1)
+    correct = np.sum(pred_labels == y_valid)
+
+    total = len(y_valid)
+
+    print("[result]")
+    print(f"samples              : {total}")
+    print(f"correct predictions  : {correct}/{total}")
+    print(f"binary cross-entropy : {bce:.6f}")
+    print(f"accuracy             : {acc:.1%}")
+
+    print("\n[per-class breakdown]")
+    for c in range(2):
+        mask = y_valid == c
+        correct_c = np.sum(pred_labels[mask] == c)
+        total_c = np.sum(mask)
+        pct = correct_c / total_c if total_c > 0 else 0.0
+        print(f"  class {c}  : {correct_c}/{total_c}  ({pct:.1%})")
 
 
 if __name__ == "__main__":

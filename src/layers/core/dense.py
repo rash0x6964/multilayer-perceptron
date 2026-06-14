@@ -45,8 +45,8 @@ class Dense(Layer):
     def backward(self, dA):
         batch_size = self.inputs.shape[0]
 
-        if self.activation_name == "softmax":
-            # gradient already simplified by loss+softmax combo
+        if self.activation_name in ("softmax", "sigmoid"):
+            # gradient already simplified by loss+softmax combo or loss+sigmoid
             dZ = dA
         else:
             dZ = dA * self.activation_grad(self.A)

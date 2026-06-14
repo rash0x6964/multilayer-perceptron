@@ -2,7 +2,13 @@ import numpy as np
 
 
 def categorical_accuracy(y_true, y_pred):
-    return np.mean(np.argmax(y_pred, axis=1) == np.argmax(y_true, axis=1))
+    if y_pred.shape[1] == 1:
+        pred = (y_pred >= 0.5).astype(int).flatten()
+        true = y_true.astype(int).flatten()
+        return float(np.mean(pred == true))
+    return float(
+        np.mean(np.argmax(y_pred, axis=1) == np.argmax(y_true, axis=1))
+    )
 
 
 def precision(y_true, y_pred):
