@@ -61,7 +61,7 @@ class Sequential:
             data[f"layer_{i}_activation"] = np.array(
                 layer.activation_name or "linear"
             )
-            data[f"layer_{i}_initializer"] = np.array("glorot_uniform")
+            data[f"layer_{i}_initializer"] = np.array(layer.kernel_initializer)
         data["n_layers"] = np.array(len(self.layers))
         np.savez(path, **data)
         print(
