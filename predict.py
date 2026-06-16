@@ -35,24 +35,11 @@ def main():
     mean = data["mean"]
     std = data["std"]
 
-
-
-    # valid_df = pd.read_csv(args.dataset)
-
-    # valid_df = pd.read_csv(args.dataset, header=None, names=col_names)
-
-    # valid_df = valid_df.drop(columns=["id"])
-    # valid_df["label"] = valid_df["label"].map({"M": 1, "B": 0})
-
     valid_df = dataset_upload_cleanup(args.dataset)
-    
+
     # split X / y
     X_valid = valid_df.drop(columns=["label"]).to_numpy()
     y_valid = valid_df["label"].to_numpy()
-
-    # X_valid = valid_df.drop(valid_df.columns[[1]], axis=1).to_numpy()
-    # y_valid = valid_df.iloc[:, 1].to_numpy()
-
 
     # one-hot encoding
     y_valid_ohe = np.eye(2)[y_valid]

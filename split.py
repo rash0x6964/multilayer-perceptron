@@ -31,12 +31,7 @@ def main():
 
     args = parser.parse_args()
 
-    # df = pd.read_csv(args.dataset, header=None, names=col_names)
-
-    # df = df.drop(columns=["id"])
-    # df["label"] = df["label"].map({"M": 1, "B": 0})
-
-    df = dataset_upload_cleanup(args.dataset)
+    df = pd.read_csv(args.dataset)
 
     train_df, valid_df = train_test_split(
         df, test_size=args.test_size, random_state=args.seed

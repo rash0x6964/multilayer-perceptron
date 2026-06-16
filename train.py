@@ -22,11 +22,6 @@ def parse_args():
 def main():
     args = parse_args()
 
-    # train_df = pd.read_csv(args.dataset, header=None, names=col_names)
-
-    # train_df = train_df.drop(columns=["id"])
-    # train_df["label"] = train_df["label"].map({"M": 1, "B": 0})
-
     train_df = dataset_upload_cleanup(args.dataset)
 
     # split X / y
@@ -151,7 +146,8 @@ def main():
     axs[1, 1].set_ylabel("Loss")
 
     axs[1, 1].legend(
-        ["model_1 validation loss", "model_2 validation loss"], loc="lower right"
+        ["model_1 validation loss", "model_2 validation loss"],
+        loc="lower right",
     )
 
     plt.tight_layout()
