@@ -1,10 +1,9 @@
+import argparse
 import numpy as np
-import pandas as pd
+import matplotlib.pyplot as plt
+
 from src import Sequential, Dense, EarlyStopping
 from utils import dataset_upload_cleanup
-
-import matplotlib.pyplot as plt
-import argparse
 
 
 def parse_args():
@@ -28,7 +27,6 @@ def main():
     X_train = train_df.drop(columns=["label"]).to_numpy()
     y_train = train_df["label"].to_numpy()
 
-    print(y_train)
     # one-hot encoding
     y_train_ohe = np.eye(2)[y_train]
 

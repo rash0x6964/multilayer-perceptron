@@ -42,5 +42,4 @@ def dataset_upload_cleanup(path):
     df = df.drop(columns=["id"])
     df["label"] = df["label"].map({"M": 1, "B": 0})
 
-    print(df)
     return df

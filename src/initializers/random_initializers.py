@@ -2,14 +2,6 @@ import math
 import numpy as np
 
 
-# def initialize_he(fan_in, fan_out):
-#     # He Normal``
-#     std = np.sqrt(2 / fan_in)
-#     weights = np.random.normal(0, std, (fan_in, fan_out))
-#     biases = np.zeros((1, fan_out))
-#     return weights, biases
-
-
 class HeUniform:
     def __init__(
         self, scale=2.0, mode="fan_in", distribution="uniform", seed=None

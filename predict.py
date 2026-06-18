@@ -1,11 +1,9 @@
-#!/usr/bin/env python3
+import argparse
+import numpy as np
 
 from src import Sequential, categorical_accuracy
 from src.losses import BinaryCrossentropy
 from utils import dataset_upload_cleanup
-import numpy as np
-import pandas as pd
-import argparse
 
 
 def parse_args():

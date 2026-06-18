@@ -1,7 +1,6 @@
 import argparse
 import numpy as np
 import pandas as pd
-from utils import dataset_upload_cleanup
 
 
 def train_test_split(df, test_size=0.2, random_state=42):

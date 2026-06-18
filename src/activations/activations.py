@@ -16,7 +16,3 @@ def sigmoid(x):
 
 def sigmoid_grad(a):
     return a * (1.0 - a)
-
-
-# def relu(x):
-#     np.maximum(0, x)
